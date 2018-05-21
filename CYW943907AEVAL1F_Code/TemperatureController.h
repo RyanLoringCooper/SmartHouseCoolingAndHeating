@@ -48,8 +48,8 @@ void checkIfControlIsNeeded() {
 
 void checkIfStillNeedAC() {
 	if(temperature < LOWER_TEMPERATURE_BOUNDARY) {
-		controlState = NONE;
 		turnOffAC();
+		controlState = NONE;
 	}
 }
 
