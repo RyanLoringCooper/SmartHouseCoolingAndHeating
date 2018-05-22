@@ -24,4 +24,4 @@ void application_start() {
     while(1) {
     	controlTemperature();
     }
-}
+}}

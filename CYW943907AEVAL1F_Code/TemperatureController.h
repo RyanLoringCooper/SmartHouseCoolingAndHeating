@@ -15,8 +15,16 @@
 #define AC_PIN WICED_GPIO_18
 
 
-enum states_enum {NONE, AC, HEATER};
-static int controlState;
+#define NO_CONTROL 0
+#define AC 1
+#define  HEATER 2
+
+
+static int controlState = NO_CONTROL;
+
+void turnOffAC() {
+    wiced_gpio_output_high(AC_PIN);
+}
 
 void turnOffHeater() {
 	wiced_gpio_output_high(HEATER_PIN);
@@ -25,10 +33,6 @@ void turnOffHeater() {
 void turnOnHeater() {
 	turnOffAC();
 	wiced_gpio_output_low(HEATER_PIN);
-}
-
-void turnOffAC() {
-	wiced_gpio_output_high(AC_PIN);
 }
 
 void turnOnAC() {
@@ -48,21 +52,21 @@ void checkIfControlIsNeeded() {
 
 void checkIfStillNeedAC() {
 	if(temperature < LOWER_TEMPERATURE_BOUNDARY) {
+		controlState = NO_CONTROL;
 		turnOffAC();
-		controlState = NONE;
 	}
 }
 
 void checkIfStillNeedHeater() {
 	if(temperature > UPPER_TEMPERATURE_BOUNDARY) {
 		turnOffHeater();
-		controlState = NONE;
+		controlState = NO_CONTROL;
 	}
 }
 
 void controlTemperature() {
 	switch(controlState) {
-		case NONE:
+		case NO_CONTROL:
 			checkIfControlIsNeeded();
 			break;
 		case AC:

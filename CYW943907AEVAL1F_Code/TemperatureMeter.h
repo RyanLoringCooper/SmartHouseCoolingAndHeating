@@ -19,31 +19,32 @@ volatile wiced_bool_t buttonPress = WICED_FALSE;
 static wiced_mutex_t temperatureMut;
 static volatile double temperature;
 
+/* Rx buffer is used to get temperature, humidity, light, and POT data - 4 bytes each */
+struct Rx_buffer {
+    float temp;
+    float humidity;
+    float light;
+    float pot;
+};
+
 void temperatureThread(wiced_thread_arg_t arg) {
+    Rx_buffer rx_buffer;
     /* Setup I2C master */
-    const wiced_i2c_device_t i2cDevice = {
-        .port = WICED_I2C_2,
-        .address = I2C_ADDRESS,
-        .address_width = I2C_ADDRESS_WIDTH_7BIT,
-        .speed_mode = I2C_STANDARD_SPEED_MODE
-    };
+    wiced_i2c_device_t i2cDevice;
+    i2cDevice.port = WICED_I2C_2;
+    i2cDevice.address = I2C_ADDRESS;
+    i2cDevice.address_width = I2C_ADDRESS_WIDTH_7BIT;
+    i2cDevice.speed_mode = I2C_STANDARD_SPEED_MODE;
+
     wiced_i2c_init(&i2cDevice);
 
     /* Tx buffer is used to set the offset */
-    uint8_t tx_buffer[] = {TEMPERATURE_REG};
+    uint8_t tx_buffer = TEMPERATURE_REG;
     wiced_i2c_message_t setOffset;
-    wiced_i2c_init_tx_message(&setOffset, tx_buffer, sizeof(tx_buffer), RETRIES, DISABLE_DMA);
+    wiced_i2c_init_tx_message(&setOffset, &tx_buffer, sizeof(tx_buffer), RETRIES, DISABLE_DMA);
 
     /* Initialize offset */
     wiced_i2c_transfer(&i2cDevice, &setOffset, NUM_MESSAGES);
-
-    /* Rx buffer is used to get temperature, humidity, light, and POT data - 4 bytes each */
-    struct {
-        float temp;
-        float humidity;
-        float light;
-        float pot;
-    } rx_buffer;
 
     wiced_i2c_message_t msg;
     wiced_i2c_init_rx_message(&msg, &rx_buffer, sizeof(rx_buffer), RETRIES, DISABLE_DMA);
