@@ -19,7 +19,7 @@
 #define AC 1
 #define  HEATER 2
 
-
+static volatile int people = 0; // TODO implement control based on this
 static int controlState = NO_CONTROL;
 
 void turnOffAC() {
