@@ -10,8 +10,8 @@
 #define ATTINY85_ADDR 0x0A
 
 // TODO choose these things
-#define SSID ""
-#define PASSWORD ""
+#define SSID "Not4u"
+#define PASSWORD "DERPDERP"
 #define IPADDR 192,168,141,1
 #define PORT 12345
 

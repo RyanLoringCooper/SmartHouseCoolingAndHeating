@@ -35,8 +35,8 @@ extern "C"
 #define SOFT_AP_PASSPHRASE   "WICED_PASSPHRASE"
 
 /* This is the default AP the device will connect to (as a client)*/
-#define CLIENT_AP_SSID       "IOT-CPS-COURSE-2G"
-#define CLIENT_AP_PASSPHRASE "scustudentiot243"
+#define CLIENT_AP_SSID       "Not4u"
+#define CLIENT_AP_PASSPHRASE "DERPDERP"
 #define CLIENT_AP_BSS_TYPE   WICED_BSS_TYPE_INFRASTRUCTURE
 #define CLIENT_AP_SECURITY   WICED_SECURITY_WPA2_MIXED_PSK
 #define CLIENT_AP_CHANNEL    1
