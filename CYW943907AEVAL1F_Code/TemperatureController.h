@@ -17,9 +17,9 @@
 
 #define NO_CONTROL 0
 #define AC 1
-#define  HEATER 2
+#define HEATER 2
 
-static volatile int people = 0; // TODO implement control based on this
+static volatile int people = 0; 
 static int controlState = NO_CONTROL;
 
 void turnOffAC() {
@@ -65,6 +65,9 @@ void checkIfStillNeedHeater() {
 }
 
 void controlTemperature() {
+	if(people < 1) {
+		controlState = NO_CONTROL;
+	}
 	switch(controlState) {
 		case NO_CONTROL:
 			checkIfControlIsNeeded();

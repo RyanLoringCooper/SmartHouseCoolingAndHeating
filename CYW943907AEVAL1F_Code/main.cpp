@@ -29,4 +29,5 @@ wiced_thread_t temperatureThreadHandle;
     while(1) {
     	controlTemperature();
     }
-}}
+}
+} // there is no reason for this brace, but it does not compile without it

@@ -8,16 +8,12 @@
 
 //------------------------------------------------------------
 
-// Attach to a WPA2 network named IOT_CPS_COURSE (this is set in the wifi_config_dct.h file).
-//
-// If the connection is successful, LED0 will blink. If not the LED1 will blink.
-// If the connection is unsuccessful, the app retries connection every 5 seconds
 #ifndef WIFICONNECTION_H
 #define WIFICONNECTION_H
 
-
 #include "wiced.h"
 #include "TemperatureController.h"
+
 #define TCP_PACKET_MAX_DATA_LENGTH          (30)
 #define TCP_SERVER_LISTEN_PORT              (12345)
 
@@ -44,22 +40,8 @@ typedef struct
 {
     wiced_bool_t quit;
     wiced_tcp_socket_t socket;
-}tcp_server_handle_t;
+} tcp_server_handle_t;
 static tcp_server_handle_t tcp_server_handle;
-/******************************************************
- *               Variable Definitions
- ******************************************************/
-
-/*static const wiced_ip_setting_t device_init_ip_settings =
-{
-    INITIALISER_IPV4_ADDRESS( .ip_address, MAKE_IPV4_ADDRESS(192,168,  0,  1) ),
-    INITIALISER_IPV4_ADDRESS( .netmask,    MAKE_IPV4_ADDRESS(255,255,255,  0) ),
-    INITIALISER_IPV4_ADDRESS( .gateway,    MAKE_IPV4_ADDRESS(192,168,  0,  1) ),
-};*/
-
-
-/*uint8_t ledToBlink = WICED_LED1;
-wiced_bool_t led = WICED_FALSE;*/
 
 static wiced_result_t tcp_server_process(  tcp_server_handle_t* server, wiced_packet_t* rx_packet )
 {
@@ -82,37 +64,8 @@ static wiced_result_t tcp_server_process(  tcp_server_handle_t* server, wiced_pa
 
     people = (int) request[0];
     return WICED_SUCCESS;
-    /* Send echo back */
-    /*if (wiced_packet_create_tcp(&server->socket, TCP_PACKET_MAX_DATA_LENGTH, &tx_packet, (uint8_t**)&tx_data, &available_data_length) != WICED_SUCCESS)
-    {
-        WPRINT_APP_INFO(("TCP packet creation failed\n"));
-        return WICED_ERROR;
-    }
-
-     Write the message into tx_data"
-    tx_data[request_length] = '\x0';
-    memcpy(tx_data, request, request_length);
-
-     Set the end of the data portion
-    wiced_packet_set_data_end(tx_packet, (uint8_t*)tx_data + request_length);
-
-     Send the TCP packet
-    if (wiced_tcp_send_packet(&server->socket, tx_packet) != WICED_SUCCESS)
-    {
-        WPRINT_APP_INFO(("TCP packet send failed\n"));
-
-         Delete packet, since the send failed
-        wiced_packet_delete(tx_packet);
-
-        server->quit=WICED_TRUE;
-        return WICED_ERROR;
-    }
-    WPRINT_APP_INFO(("Echo data: %s\n", tx_data));
-
-    return WICED_SUCCESS;
 }
-*/
-}
+
 static void tcp_server_thread_main(tcp_server_handle_t* server)
 {
 
@@ -184,8 +137,7 @@ void connectThread(wiced_thread_arg_t arg)
 
             WPRINT_APP_INFO (("Success!\n"));
 
-            connected = WICED_TRUE;
-            //ledToBlink = WICED_LED1;
+            connected = WICED_TRUE; 
         }
         else
         {
