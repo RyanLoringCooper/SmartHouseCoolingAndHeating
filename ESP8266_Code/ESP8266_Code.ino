@@ -1,4 +1,4 @@
-#include <WiFi.h>
+#include <ESP8266WiFi.h>
 #include "brzo_i2c.h"
 
 #define SDA_PIN 0
@@ -10,7 +10,7 @@
 #define ATTINY85_ADDR 0x0A
 
 // TODO choose these things
-#define SSID "Not4u"
+#define ssid "Not4u"
 #define PASSWORD "DERPDERP"
 #define IPADDR 192,168,141,1
 #define PORT 12345
@@ -22,10 +22,10 @@ static volatile uint8_t numPeople = 0;
 static uint8_t oldPeople = 0;
 
 void pollForPeople() {
-  uint8_t numPeopleTemp = 0;
+	uint8_t numPeopleTemp = 0;
 	brzo_i2c_start_transaction(ATTINY85_ADDR, SCL_SPEED);
 	brzo_i2c_read(&numPeopleTemp, 1, true); // TODO verify that repeated_start should be true 
-  numPeople = numPeopleTemp;
+	numPeople = numPeopleTemp;
 }
 
 void sendInfoIfChanged() {
@@ -38,14 +38,24 @@ void sendInfoIfChanged() {
 }
 
 void setup() {
+	Serial.begin(115200);
+	WiFi.mode(WIFI_STA);
+	WiFi.disconnect();
 	delay(1000);
 	brzo_i2c_setup(SDA_PIN, SCL_PIN, SCL_STRETCH_TIMEOUT);
-	int status = WiFi.begin(SSID, PASSWORD);
-	if(status == WL_CONNECTED) {
-		if(wifiConn.connect(cypressBoard, PORT)) {
-			// everything is setup, not sure what we should do here
-		} // else we aren't connected, so who knows what will happen
-	}// else we aren't connected, so who knows what will happen
+	Serial.println("Setup done");
+	WiFi.begin(ssid, PASSWORD);
+	while(WiFi.status() != WL_CONNECTED) {
+		Serial.println("Could not connect. Trying again in 1 second");
+		delay(1000);
+	}
+	Serial.println(WiFi.localIP());
+	while(!wifiConn.connect(cypressBoard, PORT)) {
+      // everything is setup, not sure what we should do here
+		Serial.println("Could not connect to Cypress board. Trying again in 1 second.");
+		delay(1000);
+	}
+	Serial.println("Connections have been made");
 }
 
 void loop() {
