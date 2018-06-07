@@ -1,3 +1,10 @@
+/* This code is for the ESP8266-01 to listen to an ATTiny85 as to how many 
+ * people are in a room or building. The objective is to forward this info
+ * to a cypress board that is controlling the AC or heater of a building or
+ * room. 
+ *
+ * It communicates with the ATTiny85 as the master on the I2C.
+ */
 #include <ESP8266WiFi.h>
 #include "brzo_i2c.h"
 
@@ -9,7 +16,7 @@
 
 #define ATTINY85_ADDR 0x0A
 
-// TODO choose these things
+// TODO change these things
 #define ssid "Not4u"
 #define PASSWORD "DERPDERP"
 #define IPADDR 192,168,141,1
@@ -18,9 +25,14 @@
 WiFiClient wifiConn; 
 IPAddress cypressBoard(IPADDR);
 
-static volatile uint8_t numPeople = 0;
-static uint8_t oldPeople = 0;
+// numPeople is the latest information from the ATTiny85
+uint8_t numPeople = 0;
+// oldPeople is the last transmission sent to the cypress board
+uint8_t oldPeople = 0;
 
+/* Poll the ATTiny85 for how many people are in the room
+ * This function sets numPeople based on what is read from the ATTiny85
+ */
 void pollForPeople() {
 	uint8_t numPeopleTemp = 0;
 	brzo_i2c_start_transaction(ATTINY85_ADDR, SCL_SPEED);
@@ -28,6 +40,9 @@ void pollForPeople() {
 	numPeople = numPeopleTemp;
 }
 
+/* If the latest information from the ATTiny85 is different than what was last 
+ * sent to the cypress board, inform the cypress board.
+ */
 void sendInfoIfChanged() {
 	if(oldPeople != numPeople) {
 		char peopleStr[4];
@@ -51,13 +66,15 @@ void setup() {
 	}
 	Serial.println(WiFi.localIP());
 	while(!wifiConn.connect(cypressBoard, PORT)) {
-      // everything is setup, not sure what we should do here
 		Serial.println("Could not connect to Cypress board. Trying again in 1 second.");
 		delay(1000);
 	}
 	Serial.println("Connections have been made");
 }
 
+/* Continuously poll for data and send it if it has changed
+ * This can definitely be made more power efficient.
+ */
 void loop() {
 	delay(1000);
 	pollForPeople();
