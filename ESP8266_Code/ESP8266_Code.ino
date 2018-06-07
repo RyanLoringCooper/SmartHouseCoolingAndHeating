@@ -19,7 +19,7 @@
 // TODO change these things
 #define ssid "Not4u"
 #define PASSWORD "DERPDERP"
-#define IPADDR 192,168,141,1
+#define IPADDR 192,168,43,125
 #define PORT 12345
 
 WiFiClient wifiConn; 
@@ -47,6 +47,9 @@ void sendInfoIfChanged() {
 	if(oldPeople != numPeople) {
 		char peopleStr[4];
 		sprintf(peopleStr, "%d", numPeople);
+    Serial.print("Read ");
+    Serial.print(peopleStr);
+    Serial.println(" from ATtiny85");
 		wifiConn.println(peopleStr);
 		oldPeople = numPeople;
 	}

@@ -46,6 +46,7 @@ int sample(int pin) {
 void setup() {
 	TinyWire.begin(I2C_ADDR);
     TinyWire.onRequest(i2cISR);
+    MCUCR |= 1<<6;
     pinMode(INNER, INPUT);
     pinMode(OUTER, INPUT);
 }
@@ -71,7 +72,12 @@ void waitForSomeone() {
 void waitFor(int pin, bool increment) {
 	while(changeTime-millis() < WAIT_TIME_THRESHOLD) {
 		if(sample(pin) > ADC_THRESHOLD) {
-			people = increment ? people+1 : people-1;
+			if(people < 127) {
+				people = increment ? people+1 : people-1;
+				if(people < 0) {
+					people = 0;
+				}
+			}
 			changeTime = millis();
 			state = NOTHING;
 			break;
