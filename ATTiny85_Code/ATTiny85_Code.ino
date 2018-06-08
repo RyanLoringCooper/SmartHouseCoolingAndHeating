@@ -15,7 +15,7 @@
 #define INNER PB3
 #define OUTER PB4
 // middle should be about 337 (1.65v) for a 3.3v supply ADC
-#define MIDDLE_VAL 337
+#define MIDDLE_VAL 300
 #define ADC_THRESHOLD 100
 
 // states
@@ -72,17 +72,18 @@ void waitForSomeone() {
 void waitFor(int pin, bool increment) {
 	while(changeTime-millis() < WAIT_TIME_THRESHOLD) {
 		if(sample(pin) > ADC_THRESHOLD) {
-			if(people < 127) {
-				people = increment ? people+1 : people-1;
-				if(people < 0) {
-					people = 0;
-				}
+			if(increment && people == 127) { // too many people are in the room
+			  break;
 			}
-			changeTime = millis();
-			state = NOTHING;
+			people = increment ? people+1 : people-1;
+			if(people < 0) {
+				people = 0;
+			}
 			break;
 		}
 	}
+  changeTime = millis();
+  state = NOTHING;
 }
 
 /* A state machine that has 3 states. 

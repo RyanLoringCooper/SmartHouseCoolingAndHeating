@@ -6,7 +6,8 @@
  * It communicates with the ATTiny85 as the master on the I2C.
  */
 #include <ESP8266WiFi.h>
-#include "brzo_i2c.h"
+#include <Wire.h>
+
 
 #define SDA_PIN 0
 #define SCL_PIN 2
@@ -34,9 +35,13 @@ uint8_t oldPeople = 0;
  * This function sets numPeople based on what is read from the ATTiny85
  */
 void pollForPeople() {
+  Serial.println("Polling for people");
 	uint8_t numPeopleTemp = 0;
-	brzo_i2c_start_transaction(ATTINY85_ADDR, SCL_SPEED);
-	brzo_i2c_read(&numPeopleTemp, 1, true); // TODO verify that repeated_start should be true 
+	Wire.requestFrom(ATTINY85_ADDR, 1); // requests 1 byte
+  while(Wire.available()) {
+	  numPeopleTemp = Wire.read();
+    Serial.printf("Got %d people\n", numPeopleTemp);
+  }
 	numPeople = numPeopleTemp;
 }
 
@@ -60,7 +65,7 @@ void setup() {
 	WiFi.mode(WIFI_STA);
 	WiFi.disconnect();
 	delay(1000);
-	brzo_i2c_setup(SDA_PIN, SCL_PIN, SCL_STRETCH_TIMEOUT);
+	Wire.begin(SDA_PIN, SCL_PIN);
 	Serial.println("Setup done");
 	WiFi.begin(ssid, PASSWORD);
 	while(WiFi.status() != WL_CONNECTED) {
