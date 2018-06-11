@@ -8,6 +8,7 @@
 #include <ESP8266WiFi.h>
 #include <Wire.h>
 
+// #define DEBUG
 
 #define SDA_PIN 0
 #define SCL_PIN 2
@@ -35,13 +36,15 @@ uint8_t oldPeople = 0;
  * This function sets numPeople based on what is read from the ATTiny85
  */
 void pollForPeople() {
-  Serial.println("Polling for people");
+	Serial.println("Polling for people");
 	uint8_t numPeopleTemp = 0;
 	Wire.requestFrom(ATTINY85_ADDR, 1); // requests 1 byte
-  while(Wire.available()) {
-	  numPeopleTemp = Wire.read();
-    Serial.printf("Got %d people\n", numPeopleTemp);
-  }
+	while(Wire.available()) {
+		numPeopleTemp = Wire.read();
+		#ifdef DEBUG
+			Serial.printf("Got %d people\n", numPeopleTemp);
+		#endif
+	}
 	numPeople = numPeopleTemp;
 }
 
@@ -52,9 +55,9 @@ void sendInfoIfChanged() {
 	if(oldPeople != numPeople) {
 		char peopleStr[4];
 		sprintf(peopleStr, "%d", numPeople);
-    Serial.print("Read ");
-    Serial.print(peopleStr);
-    Serial.println(" from ATtiny85");
+		#ifdef DEBUG
+			Serial.print("Read %s from ATTiny85.\n", peopleStr);
+		#endif
 		wifiConn.println(peopleStr);
 		oldPeople = numPeople;
 	}
@@ -72,12 +75,18 @@ void setup() {
 		Serial.println("Could not connect. Trying again in 1 second");
 		delay(1000);
 	}
-	Serial.println(WiFi.localIP());
+	#ifdef DEBUG
+		Serial.println(WiFi.localIP());
+	#endif
 	while(!wifiConn.connect(cypressBoard, PORT)) {
-		Serial.println("Could not connect to Cypress board. Trying again in 1 second.");
+		#ifdef DEBUG
+			Serial.println("Could not connect to Cypress board. Trying again in 1 second.");
+		#endif
 		delay(1000);
 	}
-	Serial.println("Connections have been made");
+	#ifdef DEBUG
+		Serial.println("Connections have been made");
+	#endif
 }
 
 /* Continuously poll for data and send it if it has changed

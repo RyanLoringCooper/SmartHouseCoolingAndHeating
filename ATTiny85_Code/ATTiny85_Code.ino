@@ -45,10 +45,10 @@ int sample(int pin) {
 
 void setup() {
 	TinyWire.begin(I2C_ADDR);
-    TinyWire.onRequest(i2cISR);
-    MCUCR |= 1<<6;
-    pinMode(INNER, INPUT);
-    pinMode(OUTER, INPUT);
+	TinyWire.onRequest(i2cISR);
+	MCUCR |= 1<<6;
+	pinMode(INNER, INPUT);
+	pinMode(OUTER, INPUT);
 }
 
 /* Poll both accelerometers to detect if somebody may be entering or exiting.
@@ -73,7 +73,7 @@ void waitFor(int pin, bool increment) {
 	while(changeTime-millis() < WAIT_TIME_THRESHOLD) {
 		if(sample(pin) > ADC_THRESHOLD) {
 			if(increment && people == 127) { // too many people are in the room
-			  break;
+				break;
 			}
 			people = increment ? people+1 : people-1;
 			if(people < 0) {
@@ -82,8 +82,8 @@ void waitFor(int pin, bool increment) {
 			break;
 		}
 	}
-  changeTime = millis();
-  state = NOTHING;
+	changeTime = millis();
+	state = NOTHING;
 }
 
 /* A state machine that has 3 states. 
