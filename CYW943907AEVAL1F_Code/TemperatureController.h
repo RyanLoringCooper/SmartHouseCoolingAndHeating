@@ -6,13 +6,13 @@
 // TODO include the thing that has information about how many people are in the building
 
 // these are in celcius
-#define LOWER_TEMPERATURE_BOUNDARY 20
-#define UPPER_TEMPERATURE_BOUNDARY 21.11111111
+#define LOWER_TEMPERATURE_BOUNDARY 25
+#define UPPER_TEMPERATURE_BOUNDARY 30
 
 // pin 1 on the J6 header
 #define HEATER_PIN WICED_GPIO_17
 // pin 2 on the J6 header 
-#define AC_PIN WICED_GPIO_18
+#define AC_PIN WICED_GPIO_5
 
 
 #define NO_CONTROL 0
@@ -23,21 +23,21 @@ static volatile int people = 0; // TODO implement control based on this
 static int controlState = NO_CONTROL;
 
 void turnOffAC() {
-    wiced_gpio_output_high(AC_PIN);
+    wiced_gpio_output_low(AC_PIN);
 }
 
 void turnOffHeater() {
-	wiced_gpio_output_high(HEATER_PIN);
+	wiced_gpio_output_low(HEATER_PIN);
 }
 
 void turnOnHeater() {
 	turnOffAC();
-	wiced_gpio_output_low(HEATER_PIN);
+	wiced_gpio_output_high(HEATER_PIN);
 }
 
 void turnOnAC() {
 	turnOffHeater();
-	wiced_gpio_output_low(AC_PIN);
+	wiced_gpio_output_high(AC_PIN);
 }
 
 void checkIfControlIsNeeded() {
